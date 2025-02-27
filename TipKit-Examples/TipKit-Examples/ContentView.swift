@@ -1,21 +1,41 @@
-//
-//  ContentView.swift
-//  TipKit-Examples
-//
-//  Created by Dave on 2/27/25.
-//
-
 import SwiftUI
+import TipKit
 
 struct ContentView: View {
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack(path: $navPath) {
+            VStack {
+                Text("TipKit Examples")
+                    .font(.headline)
+
+                List {
+                    ForEach(TipType.allCases) { tipType in
+                        NavigationLink(destination: {
+                            tipType.view
+                        }, label: {
+                            Text(tipType.rawValue)
+                                .font(.title)
+                        })
+                    }
+                }
+                .listStyle(InsetGroupedListStyle())
+            }
         }
-        .padding()
+    }
+
+    @State private var navPath = NavigationPath()
+
+    private enum TipType: String, Identifiable, CaseIterable {
+        case inline = "Inline Tip"
+
+        var id: String { rawValue }
+
+        var view: some View {
+            switch self {
+            case .inline: return InlineTipView()
+            }
+        }
     }
 }
 
