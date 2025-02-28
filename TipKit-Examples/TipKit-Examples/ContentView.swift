@@ -16,6 +16,7 @@ struct ContentView: View {
                         }, label: {
                             Text(tipType.rawValue)
                                 .font(.title)
+                                .padding(.vertical, 8)
                         })
                     }
                 }
@@ -28,12 +29,18 @@ struct ContentView: View {
 
     private enum TipType: String, Identifiable, CaseIterable {
         case inline = "Inline Tip"
+        case popover = "Popover Tip"
+        case action = "Action Tip"
+        case rule = "Rule Tip"
 
         var id: String { rawValue }
 
         var view: some View {
             switch self {
-            case .inline: return InlineTipView()
+            case .inline: return AnyView(InlineTipView())
+            case .popover: return AnyView(PopoverTipView())
+            case .action: return AnyView(ActionTipView())
+            case .rule: return AnyView(RuleTipView())
             }
         }
     }

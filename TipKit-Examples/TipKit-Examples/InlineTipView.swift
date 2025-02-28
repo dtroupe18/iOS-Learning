@@ -27,7 +27,7 @@ struct InlineTipView: View {
         .navigationTitle("Inline Tip View")
     }
 
-    private let inlineTip = InlineTip.default
+    private let inlineTip = ExampleTip.inline
 }
 
 #Preview {
