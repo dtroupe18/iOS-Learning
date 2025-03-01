@@ -11,6 +11,9 @@ Gives a few examples of how view transtions can be applied to views in a scrollv
 <img src="Visuals/ScaleFadeScrollTransitionView.gif" alt="ScaleFadeScrollTransitionView" style="width: 10%; display: inline-block;" />
 
 
+<img src="Visuals/BlurFadeTransition.gif" alt="BlurFadeTransition" style="width: 10%; float: left; margin-right: 10px;" />
+<img src="Visuals/ScaleScrollTransitionView.gif" alt="ScaleScrollTransitionView" style="width: 10%; float: left; margin-right: 10px;" />
+<img src="Visuals/ScaleFadeScrollTransitionView.gif" alt="ScaleFadeScrollTransitionView" style="width: 10%; float: left;" />
 
 
 
