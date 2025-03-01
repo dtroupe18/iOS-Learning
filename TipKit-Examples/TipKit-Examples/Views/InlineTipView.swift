@@ -2,6 +2,7 @@ import SwiftUI
 import TipKit
 
 struct InlineTipView: View {
+
     var body: some View {
         VStack(spacing: 16) {
             Text(
@@ -27,7 +28,7 @@ struct InlineTipView: View {
         .navigationTitle("Inline Tip View")
     }
 
-    private let inlineTip = ExampleTip.inline
+    private let inlineTip = ExampleInlineTip()
 }
 
 #Preview {

@@ -32,6 +32,8 @@ struct ContentView: View {
         case popover = "Popover Tip"
         case action = "Action Tip"
         case rule = "Rule Tip"
+        case ruleTwo = "Rule Tip Two"
+        case event = "Event Tip"
 
         var id: String { rawValue }
 
@@ -41,6 +43,8 @@ struct ContentView: View {
             case .popover: return AnyView(PopoverTipView())
             case .action: return AnyView(ActionTipView())
             case .rule: return AnyView(RuleTipView())
+            case .ruleTwo: return AnyView(RuleTipTwoView())
+            case .event: return AnyView(EventBasedTipView())
             }
         }
     }

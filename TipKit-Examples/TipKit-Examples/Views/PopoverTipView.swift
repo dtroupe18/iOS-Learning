@@ -15,7 +15,7 @@ struct PopoverTipView: View {
             }
     }
 
-    private let tip = ExampleTip.popover
+    private let tip = ExamplePopoverTip()
 }
 
 #Preview {
