@@ -9,7 +9,7 @@ Gives a few examples of how view transtions can be applied to views in a scrollv
 | ![BlurFadeTransition](Visuals/AnimatedScrollTransitions/BlurFadeTransition.gif) | ![ScaleScrollTransitionView](Visuals/AnimatedScrollTransitions/ScaleScrollTransitionView.gif) | ![ScaleFadeScrollTransitionView](Visuals/AnimatedScrollTransitions/ScaleFadeScrollTransitionView.gif) |
 | ------------------------------------------------------ | --------------------------------------------------------------------- | --------------------------------------------------------------------------- |
 
-## Tip Kit
+## TipKit
 
 | ![](Visuals/TipKit/Tipkit.gif) | ![](Visuals/TipKit/ActionTipView.png) | ![](Visuals/TipKit/EventBasedTipView.png) | ![](Visuals/TipKit/PopoverTipView.png) |
 |--------------|--------------|---------------|------------|
