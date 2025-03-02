@@ -11,8 +11,8 @@ Gives a few examples of how view transtions can be applied to views in a scrollv
 
 ## TipKit
 
-| ![](Visuals/TipKit/Tipkit.gif) | ![](Visuals/TipKit/ActionTipView.png) | ![](Visuals/TipKit/EventBasedTipView.png) | ![](Visuals/TipKit/PopoverTipView.png) |
-|--------------|--------------|---------------|------------|
+| ![](Visuals/TipKit/Tipkit.gif) | ![](Visuals/TipKit/ActionTipView.png) | ![](Visuals/TipKit/EventBasedTipView.png) |
+|--------------|--------------|---------------|
 
 
 ## ViewTransitions
