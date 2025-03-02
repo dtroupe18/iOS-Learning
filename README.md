@@ -15,3 +15,6 @@ Gives a few examples of how view transtions can be applied to views in a scrollv
 |--------------|--------------|---------------|------------|
 
 
+## ViewTransitions
+
+![](Visuals/ViewTransitions/ViewTransitions.gif)
