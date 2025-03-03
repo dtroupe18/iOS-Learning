@@ -57,16 +57,10 @@ struct VerticalExpansionView: View {
                     }
 
                     if let lastProps = buttonProperties.last {
-                        // Create the toggle button. It switches between "+" and "xmark" based on state.
-                        CircleButtonView(
-                            properties: CircleButtonProperties(
-                                symbol: isOpen ? "xmark" : lastProps.symbol,  // Change symbol based on menu state.
-                                color: lastProps.color,
-                                action: lastProps.action  // Use the action of the last button.
-                            )
-                        )
+                        CircleButtonView(properties: lastProps)
                         // Add subtle rotation effect to the toggle button during the transition.
-                        .rotationEffect(.degrees(isOpen ? 90 : 0))  // Rotate the button when toggled.
+                        // Use 135 degrees so the `+` rotates to an `x` for close.
+                        .rotationEffect(.degrees(isOpen ? 135 : 0))
                         .onTapGesture {
                             // Toggle the state when the button is tapped, causing the menu to open/close.
                             withAnimation(.easeInOut(duration: 0.8)) {

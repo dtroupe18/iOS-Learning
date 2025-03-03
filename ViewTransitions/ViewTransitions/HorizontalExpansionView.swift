@@ -50,17 +50,10 @@ struct HorizontalExpansionView: View {
                     }
 
                     if let lastProps = buttonProperties.last {
-                        // Create the main button (either "+" or "xmark" when open)
-                        CircleButtonView(
-                            properties: CircleButtonProperties(
-                                // Swap the symbol between "+" and "xmark" based on state
-                                symbol: isOpen ? "xmark" : lastProps.symbol,
-                                color: lastProps.color,
-                                action: lastProps.action
-                            )
-                        )
+                        CircleButtonView(properties: lastProps)
                         // Add subtle rotation effect when toggling the menu
-                        .rotationEffect(.degrees(isOpen ? 90 : 0))
+                        // use 135 degrees so the `+` rotates to an `x` for close.
+                        .rotationEffect(.degrees(isOpen ? 135 : 0))
                         .onTapGesture {
                             // Tapping this button opens/closes the menu with animation
                             withAnimation(.easeInOut(duration: 0.8)) {

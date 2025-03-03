@@ -44,6 +44,8 @@ struct CircleButtonView: View {
                     Image(systemName: properties.symbol)
                         .foregroundColor(.white) // Icon color is white for contrast.
                         .bold() // Makes the symbol slightly thicker.
+                        // Account for the amount of rotation the animation will do.
+                        .rotationEffect(.degrees(-90))
                 }
         }
         .frame(width: 40) // Fixed size for all buttons.
