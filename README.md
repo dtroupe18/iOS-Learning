@@ -19,3 +19,11 @@ Gives a few examples of how view transtions can be applied to views in a scrollv
 
 |![](Visuals/ViewTransitions/ViewTransitions.gif)|
 |------------------------------------------------|
+
+
+## Pi Day
+
+Explores rotating animations based on Pi. Includes a screensave in SwiftUI
+
+|![](Visuals/PiScreenSaver/PiScreenSaver.gif)|
+|------------------------------------------------|
