@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "18EC9FCE-4BF3-4A30-A160-21D4EC80F7D9"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "FF418815-EEA9-4BB0-B686-DCD3EA29C374"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../var/folders/91/7ppx1rk57qs0c2n4dkfdp5pc0000gn/T/swift-generated-sources/@__swiftmacro_20HIIT_Timer_Watch_App0021AdjustViewswift_IfFDefMX38_0_33_F1F5014281CC4E9A223A8FEA4ABA1E10Ll7PreviewfMf_.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1"
+            endingLineNumber = "1"
+            landmarkName = "$s20HIIT_Timer_Watch_App0021AdjustViewswift_IfFDefMX38_0_33_F1F5014281CC4E9A223A8FEA4ABA1E10Ll7PreviewfMf_15PreviewRegistryfMu_"
+            landmarkType = "37">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
