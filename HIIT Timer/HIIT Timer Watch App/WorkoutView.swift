@@ -13,7 +13,7 @@ struct WorkoutView: View {
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 4) {
             ZStack {
                 Circle()
                     .stroke(Color.gray.opacity(0.3), lineWidth: 5)  // Background ring
@@ -31,17 +31,29 @@ struct WorkoutView: View {
             .frame(width: 100, height: 100)
 
             Text(currentPhase.name)
-                .font(.system(size: 16, weight: .bold))
+                .font(.system(size: 14, weight: .bold))
                 .foregroundColor(currentPhase.color)
 
             Text("Round \(currentRound) of \(String(format: "%.0f", settings.rounds))")
                 .font(.system(size: 12))
 
             // Heart rate display
-            Text("\(Int(healthKitService.heartRate)) BPM")
-                .font(.headline)
-                .foregroundColor(.red)
-                .padding(.top, 4)
+            HStack {
+                Image(systemName: "heart.fill")
+                    .foregroundColor(.red)
+                    .scaleEffect(isRunning ? 1.2 : 1.0)  // Scale up and down
+                    .animation(
+                        .easeInOut(duration: 0.5).repeatForever(autoreverses: true),
+                        value: isRunning
+                    )
+
+                Text("\(Int(healthKitService.heartRate)) BPM")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.red)
+            }
+
+            // TODO: make the HR animate based on the actual rate and the color should
+            // match the HR zone the user is in.
 
             Button(isRunning ? "Stop Workout" : "Start Workout") {
                 if isRunning {
