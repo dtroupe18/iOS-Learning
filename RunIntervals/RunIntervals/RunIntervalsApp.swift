@@ -1,12 +1,14 @@
-import SwiftData
 import SwiftUI
 
 @main
 struct RunIntervalsApp: App {
     var body: some Scene {
         WindowGroup {
-            WorkoutListView()
+            WorkoutListView(
+                viewModel: WorkoutListViewModel(dependencyContainer: appDependencyContainer)
+            )
         }
-        .modelContainer(for: IntervalWorkout.self)
     }
+
+    let appDependencyContainer: DependencyContainer = AppDependencyContainer()
 }
