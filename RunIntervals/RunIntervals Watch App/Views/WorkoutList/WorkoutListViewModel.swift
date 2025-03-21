@@ -3,9 +3,10 @@ import SwiftUI
 @Observable
 final class WorkoutListViewModel {
 
-    init(dataService: DataService) {
-        self.dataService = dataService
-        self.watchConnectivityManager = WatchConnectivityManager()
+    init(dependencyContainer: WatchDependencyContainer) {
+        self.dependencyContainer = dependencyContainer
+        self.dataService = dependencyContainer.dataService
+        self.watchConnectivityManager = dependencyContainer.watchConnectivityManager
         watchConnectivityManager.workoutsHandler = { [weak self] workouts in
             self?.handleWorkoutsFromApp(workouts)
         }
@@ -28,6 +29,11 @@ final class WorkoutListViewModel {
         workouts = workouts.filter { $0.id != workout.id }
     }
 
+    func liveWorkoutViewModel(for workout: IntervalWorkout) -> LiveWorkoutViewModel {
+        LiveWorkoutViewModel(dependencyContainer: dependencyContainer, workout: workout)
+    }
+
+    private let dependencyContainer: WatchDependencyContainer
     private let dataService: DataService
     private let watchConnectivityManager: WatchConnectivityManager
 

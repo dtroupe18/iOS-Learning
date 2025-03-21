@@ -9,7 +9,11 @@ struct WorkoutListView: View {
     var body: some View {
         NavigationStack {
             List(viewModel.workouts, id: \.id) { workout in
-                NavigationLink(destination: LiveWorkoutView(workout: workout)) {
+                NavigationLink(
+                    destination: LiveWorkoutView(
+                        viewModel: viewModel.liveWorkoutViewModel(for: workout)
+                    )
+                ) {
                     HStack {
                         VStack(alignment: .leading) {
                             Text(workout.name)
@@ -61,7 +65,7 @@ struct WorkoutListView: View {
 #Preview {
     WorkoutListView(
         viewModel: WorkoutListViewModel(
-            dataService: CacheableDataService(directoryName: "watch-preview")
+            dependencyContainer: DependencyContainer()
         )
     )
 }

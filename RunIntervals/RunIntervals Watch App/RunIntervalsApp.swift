@@ -6,7 +6,7 @@ struct RunIntervals_Watch_AppApp: App {
         WindowGroup {
             WorkoutListView(
                 viewModel: WorkoutListViewModel(
-                    dataService: CacheableDataService(directoryName: "watch-workouts")
+                    dependencyContainer: DependencyContainer()
                 )
             )
         }

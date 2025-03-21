@@ -1,36 +1,17 @@
-import Combine
 import HealthKit
+import Observation
 
-final class HealthKitService: NSObject, ObservableObject {
-    private var healthStore = HKHealthStore()
-    private var session: HKWorkoutSession?
-    private var builder: HKLiveWorkoutBuilder?
+@Observable
+final class HealthKitWorkoutService: NSObject {
 
-    @Published var isWorkoutActive: Bool = false
-    @Published var heartRate: Double = 0.0
+    var isWorkoutActive: Bool = false
+    var heartRate: Double = 0.0
+    var distance: Double = 0.0
+    var pace: Double = 0.0
 
-    private var cancellables = Set<AnyCancellable>()
-
-    // Check if HealthKit is available on the device
+    /// Check if HealthKit is available on the device
     static var isHealthKitAvailable: Bool {
         return HKHealthStore.isHealthDataAvailable()
-    }
-
-    // Request authorization to access HealthKit data
-    func requestAuthorization() {
-        // qwe this is copy paste
-        let workoutType = HKObjectType.workoutType()
-        let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)!
-        let readTypes: Set = [workoutType, heartRateType]
-        let writeTypes: Set = [workoutType]
-
-        healthStore.requestAuthorization(toShare: writeTypes, read: readTypes) { success, error in
-            if success {
-                print("HealthKit authorization granted")
-            } else if let error = error {
-                print("HealthKit authorization failed: \(error.localizedDescription)")
-            }
-        }
     }
 
     // Start the workout session with live heart rate tracking
@@ -88,6 +69,16 @@ final class HealthKitService: NSObject, ObservableObject {
         }
     }
 
+    // MARK: Private
+
+    private var healthStore = HKHealthStore()
+    private var session: HKWorkoutSession?
+    private var builder: HKLiveWorkoutBuilder?
+
+    private let runningSpeedType = HKObjectType.quantityType(forIdentifier: .runningSpeed)
+    private let distanceType = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)
+    private let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)
+
     // Fetch heart rate samples in real time
     private func handleHeartRateSamples(_ samples: [HKSample]) {
         guard let quantitySamples = samples as? [HKQuantitySample] else { return }
@@ -102,9 +93,32 @@ final class HealthKitService: NSObject, ObservableObject {
             }
         }
     }
+
+    private func updateDistance() {
+        guard let distanceType else { return }
+
+        builder?.statistics(for: distanceType).map {
+            self.distance = $0.sumQuantity()?.doubleValue(for: HKUnit.meter()) ?? 0.0
+        }
+    }
+    private func updatePace() {
+        guard let runningSpeedType else { return }
+
+        builder?.statistics(for: runningSpeedType).map {
+            let avgSpeed = $0.averageQuantity()
+            let doubleValue = avgSpeed?.doubleValue(
+                for: HKUnit.mile().unitDivided(by: HKUnit.second())
+            )
+
+            if let speed = doubleValue {
+                // Convert speed (miles per second) to pace (minutes per mile)
+                self.pace = speed > 0 ? (1.0 / speed) * 60.0 : 0.0
+            }
+        }
+    }
 }
 
-extension HealthKitService: HKWorkoutSessionDelegate {
+extension HealthKitWorkoutService: HKWorkoutSessionDelegate {
     func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {
         print("Workout session error: \(error.localizedDescription)")
     }
@@ -124,22 +138,33 @@ extension HealthKitService: HKWorkoutSessionDelegate {
     }
 }
 
-extension HealthKitService: HKLiveWorkoutBuilderDelegate {
+extension HealthKitWorkoutService: HKLiveWorkoutBuilderDelegate {
     func workoutBuilder(
-        _ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>
+        _ workoutBuilder: HKLiveWorkoutBuilder,
+        didCollectDataOf collectedTypes: Set<HKSampleType>
     ) {
-        let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)!
-
-        if let statistics = workoutBuilder.statistics(for: heartRateType),
-            let quantity = statistics.mostRecentQuantity()
-        {
-            handleHeartRateSamples([
-                HKQuantitySample(
-                    type: heartRateType, quantity: quantity, start: statistics.startDate,
-                    end: statistics.endDate)
-            ])
+        // Get Heartrate data.
+        if let heartRateType {
+            if let statistics = workoutBuilder.statistics(for: heartRateType),
+                let quantity = statistics.mostRecentQuantity()
+            {
+                handleHeartRateSamples([
+                    HKQuantitySample(
+                        type: heartRateType, quantity: quantity, start: statistics.startDate,
+                        end: statistics.endDate)
+                ])
+            }
         }
 
+        // Get running distance
+        if let distanceType, collectedTypes.contains(distanceType) {
+            self.updateDistance()
+        }
+
+        // Get running pace
+        if let runningSpeedType, collectedTypes.contains(runningSpeedType) {
+            self.updatePace()
+        }
     }
 
     func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {

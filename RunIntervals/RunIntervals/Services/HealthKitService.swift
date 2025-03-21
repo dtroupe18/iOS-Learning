@@ -5,12 +5,21 @@ final class HealthKitService {
 
     init() {}
 
-    // Request authorization to access HealthKit data
+    /// Requests authorization to access HealthKit data.
     func requestAuthorization() {
         let workoutType = HKObjectType.workoutType()
-        let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)!
-        let readTypes: Set = [workoutType, heartRateType]
+
+        let readTypes: Set = [
+            workoutType,
+            HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
+            HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
+            HKObjectType.quantityType(forIdentifier: .heartRate)!,
+            HKObjectType.quantityType(forIdentifier: .runningSpeed)!,
+            HKQuantityType.quantityType(forIdentifier: .vo2Max)!
+        ]
+
         let writeTypes: Set = [workoutType]
+
 
         healthStore.requestAuthorization(toShare: writeTypes, read: readTypes) { success, error in
             if success {
