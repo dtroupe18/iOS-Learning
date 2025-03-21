@@ -43,7 +43,7 @@ struct WorkoutListView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10)) : nil
             )
             .onAppear {
-                viewModel.loadWorkouts()
+                viewModel.onAppear()
             }
             .navigationTitle("Workouts")
             .toolbar {

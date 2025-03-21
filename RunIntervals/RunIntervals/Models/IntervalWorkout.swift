@@ -19,24 +19,6 @@ struct IntervalWorkout: Cacheable {
         return totalSeconds.formattedString
     }
 
-    var description: String {
-        let containsWarmup: Bool = intervals.first?.type == .warmup
-        let containsCooldown: Bool = intervals.last?.type == .coolDown
-
-        var str = ""
-        if containsWarmup {
-            str += "Warmup + "
-        }
-
-        str += "\(intervals.count) rounds"
-
-        if containsCooldown {
-            str += " + Cooldown"
-        }
-
-        return str
-    }
-
     static func sample() -> IntervalWorkout {
         let warmup = Interval(type: .warmup, duration: 5 * 60, id: UUID.newString)
         let cooldown = Interval(type: .coolDown, duration: 5 * 60, id: UUID.newString)

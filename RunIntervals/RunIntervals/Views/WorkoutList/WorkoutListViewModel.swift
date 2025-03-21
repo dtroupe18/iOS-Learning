@@ -9,14 +9,9 @@ final class WorkoutListViewModel {
 
     private(set) var workouts: [IntervalWorkout] = []
 
-    /// Load all workouts from SwiftData
-    func loadWorkouts() {
-        let loadedWorkouts: [IntervalWorkout] = dataService.load()
-        if loadedWorkouts.isEmpty {
-            workouts = [IntervalWorkout.sample()]
-        } else {
-            workouts = loadedWorkouts
-        }
+    func onAppear() {
+        loadWorkouts()
+        healthKitService.requestAuthorization()
     }
 
     /// Delete a workout
@@ -35,8 +30,19 @@ final class WorkoutListViewModel {
 
     private let dependencyContainer: DependencyContainer
     private var dataService: DataService { dependencyContainer.dataService }
+    private let healthKitService = HealthKitService()
 
     private var watchConnectivityManager: WatchConnectivityManager {
         dependencyContainer.watchConnectivityManager
+    }
+
+    /// Load all workouts from SwiftData
+    private func loadWorkouts() {
+        let loadedWorkouts: [IntervalWorkout] = dataService.load()
+        if loadedWorkouts.isEmpty {
+            workouts = [IntervalWorkout.sample()]
+        } else {
+            workouts = loadedWorkouts
+        }
     }
 }

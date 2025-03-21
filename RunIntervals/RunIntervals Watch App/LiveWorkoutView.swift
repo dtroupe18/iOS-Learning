@@ -1,0 +1,127 @@
+import Combine
+import SwiftUI
+
+struct LiveWorkoutView: View {
+    var workout: IntervalWorkout
+    @ObservedObject var healthKitService = HealthKitService()
+
+    @State private var currentRound: Int = 1
+    @State private var currentIntervalIndex: Int = 0  // Tracks the current interval
+    @State private var timeRemaining: Double = 0
+    @State private var isWorking = true
+    @State private var timer: AnyCancellable?
+    @State private var isRunning = false
+    @Environment(\.dismiss) var dismiss
+
+    var body: some View {
+        VStack(spacing: 4) {
+            ZStack {
+                Circle()
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 5)  // Background ring
+
+                Circle()
+                    .trim(from: 0, to: progress)
+                    .stroke(currentInterval.color, lineWidth: 5)
+                    .rotationEffect(.degrees(-90))  // Start from top
+                    .animation(.easeInOut(duration: 0.5), value: progress)
+
+                Text("\(timeString(timeRemaining))")
+                    .font(.largeTitle)
+                    .monospacedDigit()
+            }
+            .frame(width: 100, height: 100)
+
+            Text(currentInterval.name)
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(currentInterval.color)
+
+            Text("Round \(currentRound) of \(String(format: "%.0f", Double(workout.intervals.count / 2)))")  // Half of intervals are work-rest pairs
+                .font(.system(size: 12))
+
+            // Heart rate display
+            HStack {
+                Image(systemName: "heart.fill")
+                    .foregroundColor(.red)
+                    .scaleEffect(isRunning ? 1.2 : 1.0)  // Scale up and down
+                    .animation(
+                        .easeInOut(duration: 0.5).repeatForever(autoreverses: true),
+                        value: isRunning
+                    )
+
+                Text("\(Int(healthKitService.heartRate)) BPM")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundColor(.red)
+            }
+
+            Button(isRunning ? "Stop Workout" : "Start Workout") {
+                if isRunning {
+                    stopWorkout()
+                } else {
+                    startWorkout()
+                }
+            }
+            .buttonStyle(.bordered)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 8)
+        }
+        .onAppear {
+            timeRemaining = workout.intervals[currentIntervalIndex].duration
+            healthKitService.requestAuthorization()
+        }
+        .padding(.vertical, 8)
+        .navigationBarBackButtonHidden(true)  // Hide the back button
+    }
+
+    private var currentInterval: Interval {
+        workout.intervals[currentIntervalIndex]
+    }
+
+    private var progress: CGFloat {
+        CGFloat(timeRemaining) / CGFloat(workout.intervals[currentIntervalIndex].duration)
+    }
+
+    private func startWorkout() {
+        healthKitService.startWorkout(workoutType: .highIntensityIntervalTraining)
+        startTimer()
+        isRunning = true
+    }
+
+    private func stopWorkout() {
+        healthKitService.stopWorkout()
+        timer?.cancel()
+        isRunning = false
+    }
+
+    private func startTimer() {
+        timer = Timer.publish(every: 0.25, on: .main, in: .common).autoconnect()
+            .sink { _ in
+                if timeRemaining > 0 {
+                    timeRemaining -= 0.25
+                } else {
+                    WKInterfaceDevice.current().play(.notification)  // Strong haptic feedback
+                    switchInterval()
+                }
+            }
+    }
+
+    private func switchInterval() {
+        if currentIntervalIndex < workout.intervals.count - 1 {
+            currentIntervalIndex += 1
+            timeRemaining = workout.intervals[currentIntervalIndex].duration
+            isWorking = workout.intervals[currentIntervalIndex].type == .highIntensity
+        } else {
+            stopWorkout()
+            dismiss()
+        }
+    }
+
+    private func timeString(_ seconds: Double) -> String {
+        let intSeconds = Int(seconds)
+        let minutes = intSeconds / 60
+        let remainingSeconds = intSeconds % 60
+
+        return minutes > 0
+            ? String(format: "%d:%02d", minutes, remainingSeconds)
+            : String(format: "0:%02d", remainingSeconds)
+    }
+}

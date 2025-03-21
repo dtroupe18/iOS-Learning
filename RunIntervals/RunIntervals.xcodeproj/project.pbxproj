@@ -648,6 +648,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = RunIntervals;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Track live workouts";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Track live workouts";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.highTree.RunIntervals;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -679,6 +681,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = RunIntervals;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Track live workouts";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Track live workouts";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.highTree.RunIntervals;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -711,6 +715,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = RunIntervals;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Track live workouts on your watch";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Track live workouts on your watch";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -748,6 +754,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = RunIntervals;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Track live workouts on your watch";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Track live workouts on your watch";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

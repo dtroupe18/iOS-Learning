@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 struct Interval: Codable, Identifiable {
     let type: IntervalType
@@ -14,4 +15,7 @@ struct Interval: Codable, Identifiable {
         self.duration = duration
         self.id = id
     }
+
+    var color: Color { type.color }
+    var name: String { type.name }
 }
