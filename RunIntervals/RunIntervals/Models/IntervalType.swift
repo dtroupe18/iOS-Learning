@@ -20,13 +20,13 @@ enum IntervalType: String, Codable {
     var name: String {
         switch self {
         case .warmup:
-            return "Warm-up"
+            return "WARM UP"
         case .lowIntensity:
-            return "Low Intensity"
+            return "LOW INTENSITY"
         case .highIntensity:
-            return "High Intensity"
+            return "HIGH INTENSITY"
         case .coolDown:
-            return "Cool Down"
+            return "COOL DOWN"
         }
     }
 }

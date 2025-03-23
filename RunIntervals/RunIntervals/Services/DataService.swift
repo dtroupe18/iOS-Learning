@@ -43,7 +43,14 @@ final class CacheableDataService: DataService {
 
     func add<T: Cacheable>(_ items: [T]) {
         var loadedItems: [T] = load()
-        loadedItems.append(contentsOf: items)
+
+        // Filter out items that already exist in loadedItems based on their id
+        let newItems = items.filter { newItem in
+            !loadedItems.contains(where: { $0.id == newItem.id })
+        }
+
+        // Append only unique items
+        loadedItems.append(contentsOf: newItems)
         save(loadedItems)
     }
 

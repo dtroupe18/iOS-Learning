@@ -18,7 +18,7 @@ final class WorkoutListViewModel {
     func loadWorkouts() {
         let loadedWorkouts: [IntervalWorkout] = dataService.load()
         if loadedWorkouts.isEmpty {
-            workouts = [IntervalWorkout.sample()]
+            workouts = IntervalWorkout.defaultWorkouts
         } else {
             workouts = loadedWorkouts
         }
@@ -35,7 +35,7 @@ final class WorkoutListViewModel {
 
     private let dependencyContainer: WatchDependencyContainer
     private let dataService: DataService
-    private let watchConnectivityManager: WatchConnectivityManager
+    private var watchConnectivityManager: WatchMessagingService
 
     private func handleWorkoutsFromApp(_ workouts: [IntervalWorkout]) {
         dataService.add(workouts)

@@ -32,7 +32,7 @@ final class WorkoutListViewModel {
     private var dataService: DataService { dependencyContainer.dataService }
     private let healthKitService = HealthKitService()
 
-    private var watchConnectivityManager: WatchConnectivityManager {
+    private var watchConnectivityManager: AppWatchConnectivityManager {
         dependencyContainer.watchConnectivityManager
     }
 
@@ -40,9 +40,13 @@ final class WorkoutListViewModel {
     private func loadWorkouts() {
         let loadedWorkouts: [IntervalWorkout] = dataService.load()
         if loadedWorkouts.isEmpty {
-            workouts = [IntervalWorkout.sample()]
+            workouts = IntervalWorkout.defaultWorkouts
         } else {
+            #if DEUBUG
+            workouts = loadedWorkouts + [IntervalWorkout.testWorkout]
+            #else
             workouts = loadedWorkouts
+            #endif
         }
     }
 }

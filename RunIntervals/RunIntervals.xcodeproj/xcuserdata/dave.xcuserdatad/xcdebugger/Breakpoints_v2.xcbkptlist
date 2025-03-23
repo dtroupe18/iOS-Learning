@@ -7,16 +7,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "303CC7EB-C868-4701-AE4E-0CDA3F8F4558"
+            uuid = "C483699F-2A19-44FF-A971-995C55E17C91"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "RunIntervals/Views/WorkoutListViewModel.swift"
+            filePath = "RunIntervals Watch App/Views/WorkoutList/WorkoutListViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "29"
-            endingLineNumber = "29"
-            landmarkName = "saveWorkout(name:intervals:)"
+            startingLineNumber = "11"
+            endingLineNumber = "11"
+            landmarkName = "init(dependencyContainer:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

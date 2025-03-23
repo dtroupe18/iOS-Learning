@@ -1,33 +1,20 @@
 import WatchConnectivity
 import Foundation
 
-final class WatchConnectivityManager: NSObject, ObservableObject, WCSessionDelegate {
+final class AppWatchConnectivityManager: NSObject, WCSessionDelegate {
 
-    enum ConnectionState {
-        case notConnected
-        case connected
-    }
+    // MARK: - Initializer
 
-    enum WatchConnectivityError: Error {
-        case notSupported
-        case notConnected
-        case encodingFailed
-        case sendFailed(String)
+    override init() {
+        self.session = WCSession.default
+        super.init()
+        setupSession()
     }
 
     // MARK: - Properties
 
-    @Published private(set) var connectionState: ConnectionState = .notConnected
-    @Published private(set) var workouts: [IntervalWorkout] = []
-
-    // MARK: - Initializer
-
-    init(dataService: DataService) {
-        self.session = WCSession.default
-        self.dataService = dataService
-        super.init()
-        setupSession()
-    }
+    private(set) var connectionState: WatchConnectionState = .notConnected
+    private(set) var workouts: [IntervalWorkout] = []
 
     // MARK: - Sync Workouts to Watch
 
@@ -52,15 +39,19 @@ final class WatchConnectivityManager: NSObject, ObservableObject, WCSessionDeleg
             return try await withCheckedThrowingContinuation { continuation in
                 session.sendMessage(payload, replyHandler: { response in
                     // Handle the reply from the watch
-                    if let reply = response[WatchMessageConstants.replyKey] as? Bool, reply == true {
+                    if let reply = response[WatchMessageConstants.replyKey] as? Bool,
+                        reply == true {
                         // Success
                         continuation.resume()
                     } else {
                         // Failure
-                        continuation.resume(throwing: WatchConnectivityError.sendFailed("Watch failed to process workouts"))
+                        let error = WatchConnectivityError
+                            .sendFailed("Watch failed to process workouts")
+                        continuation.resume(throwing: error)
                     }
                 }, errorHandler: { error in
-                    continuation.resume(throwing: WatchConnectivityError.sendFailed(error.localizedDescription))
+                    let err = WatchConnectivityError.sendFailed(error.localizedDescription)
+                    continuation.resume(throwing: err)
                 })
             }
         } catch {
@@ -68,30 +59,13 @@ final class WatchConnectivityManager: NSObject, ObservableObject, WCSessionDeleg
         }
     }
 
-    // MARK: - Receive Workouts from iPhone
-
     func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
-        if let data = message["workouts"] as? Data {
-            do {
-                let receivedWorkouts = try JSONDecoder().decode([IntervalWorkout].self, from: data)
-                DispatchQueue.main.async {
-                    self.workouts = receivedWorkouts
-                    self.save(receivedWorkouts)
-                }
-            } catch {
-                print("Failed to decode workouts: \(error.localizedDescription)")
-            }
-        }
+        // TODO: Handle any messages from watch.
     }
 
     // MARK: Private
 
     private let session: WCSession
-    private let dataService: DataService
-
-    private func save(_ workouts: [IntervalWorkout]) {
-        dataService.add(workouts)
-    }
 
     private func setupSession() {
         guard WCSession.isSupported() else {
@@ -105,7 +79,7 @@ final class WatchConnectivityManager: NSObject, ObservableObject, WCSessionDeleg
 
 // MARK: - WCSessionDelegate Methods
 
-extension WatchConnectivityManager {
+extension AppWatchConnectivityManager {
     func session(
         _ session: WCSession,
         activationDidCompleteWith state: WCSessionActivationState,

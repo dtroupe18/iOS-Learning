@@ -1,15 +1,25 @@
 import Foundation
+import os
 import WatchConnectivity
 
-final class WatchConnectivityManager: NSObject, WCSessionDelegate {
+protocol WatchMessagingService {
+    var connectionState: WatchConnectionState { get }
+    var workoutsHandler: (([IntervalWorkout]) -> Void)? { get set }
+}
 
-    init(workoutsHandler: (([IntervalWorkout]) -> Void)? = nil) {
+final class WatchConnectivityManager: NSObject, WatchMessagingService, WCSessionDelegate {
+
+    init(logger: Logger, workoutsHandler: (([IntervalWorkout]) -> Void)? = nil) {
         self.workoutsHandler = workoutsHandler
+        self.logger = logger
+        self.session = WCSession.default
         super.init()
         setupSession()
     }
 
+    let logger: Logger
     var workoutsHandler: (([IntervalWorkout]) -> Void)?
+    private(set) var connectionState: WatchConnectionState = .notConnected
 
     // MARK: - Receive Workouts from iPhone
 
@@ -42,15 +52,24 @@ final class WatchConnectivityManager: NSObject, WCSessionDelegate {
         _ session: WCSession,
         activationDidCompleteWith state: WCSessionActivationState,
         error: Error?
-    ) {}
+    ) {
+        logger.error(
+            """
+            WatchConnectivityManager activationDidCompleteWith: \(String(describing: state), privacy: .public), 
+            error: \(String(describing: error), privacy: .public)
+            """
+        )
+    }
 
     func sessionReachabilityDidChange(_ session: WCSession) {
-        print("Watch session reachability changed: \(session.isReachable)")
+        logger.debug("WatchConnectivityManager session reachability changed: \(session.isReachable)")
     }
+
+    private let session: WCSession
 
     private func setupSession() {
         guard WCSession.isSupported() else { return }
-        WCSession.default.delegate = self
-        WCSession.default.activate()
+        session.delegate = self
+        session.activate()
     }
 }

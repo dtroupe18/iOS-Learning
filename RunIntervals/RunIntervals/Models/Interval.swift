@@ -18,4 +18,9 @@ struct Interval: Codable, Identifiable {
 
     var color: Color { type.color }
     var name: String { type.name }
+
+    var healthKitEventMetadata: [String: Any] {
+        let data = try! JSONEncoder().encode(self)
+        return ["interval": data]
+    }
 }

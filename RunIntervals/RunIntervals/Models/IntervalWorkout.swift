@@ -19,13 +19,34 @@ struct IntervalWorkout: Cacheable {
         return totalSeconds.formattedString
     }
 
-    static func sample() -> IntervalWorkout {
+    static let sampleWorkout: IntervalWorkout = {
         let warmup = Interval(type: .warmup, duration: 5 * 60, id: UUID.newString)
         let cooldown = Interval(type: .coolDown, duration: 5 * 60, id: UUID.newString)
         let hittRounds = Self.generateIntervals(rounds: 20)
         let intervals = [warmup] + hittRounds + [cooldown]
 
-        return IntervalWorkout(name: "Example", intervals: intervals)
+        return IntervalWorkout(name: "Example", intervals: intervals, id: "sample-workout-id")
+    }()
+
+    static let testWorkout: IntervalWorkout = {
+        IntervalWorkout(
+            name: "Test",
+            intervals: [
+                Interval(type: .warmup, duration: 10, id: UUID.newString),
+                Interval(type: .highIntensity, duration: 10, id: UUID.newString),
+                Interval(type: .lowIntensity, duration: 10, id: UUID.newString),
+                Interval(type: .coolDown, duration: 10, id: UUID.newString),
+            ],
+            id: "test-workout-id"
+        )
+    }()
+
+    static var defaultWorkouts: [IntervalWorkout] {
+        #if DEBUG
+        return [sampleWorkout, testWorkout]
+        #else
+        return [sampleWorkout]
+        #endif
     }
 
     static func generateIntervals(

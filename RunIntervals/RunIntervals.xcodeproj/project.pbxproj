@@ -80,6 +80,8 @@
 				Models/Interval.swift,
 				Models/IntervalType.swift,
 				Models/IntervalWorkout.swift,
+				Models/WatchConnectionState.swift,
+				Models/WatchConnectivityError.swift,
 				Models/WatchMessageConstants.swift,
 				Services/DataService.swift,
 				Services/HealthKitService.swift,
@@ -648,6 +650,7 @@
 				DEVELOPMENT_TEAM = DE8BN3U97V;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "RunIntervals-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = RunIntervals;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Track live workouts";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Track live workouts";
@@ -681,6 +684,7 @@
 				DEVELOPMENT_TEAM = DE8BN3U97V;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "RunIntervals-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = RunIntervals;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Track live workouts";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Track live workouts";

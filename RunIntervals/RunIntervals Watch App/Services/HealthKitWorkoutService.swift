@@ -1,13 +1,20 @@
 import HealthKit
 import Observation
+import os
+
+// TODO: Protocol
 
 @Observable
 final class HealthKitWorkoutService: NSObject {
 
-    var isWorkoutActive: Bool = false
-    var heartRate: Double = 0.0
-    var distance: Double = 0.0
-    var pace: Double = 0.0
+    init(logger: Logger) {
+        self.logger = logger
+    }
+
+    private(set) var isWorkoutActive: Bool = false
+    private(set) var heartRate: Double = 0.0
+    private(set) var distance: Double = 0.0
+    private(set) var pace: Double = 0.0
 
     /// Check if HealthKit is available on the device
     static var isHealthKitAvailable: Bool {
@@ -15,9 +22,9 @@ final class HealthKitWorkoutService: NSObject {
     }
 
     // Start the workout session with live heart rate tracking
-    func startWorkout(workoutType: HKWorkoutActivityType) {
+    func startWorkout() {
         let configuration = HKWorkoutConfiguration()
-        configuration.activityType = workoutType
+        configuration.activityType  = .running
         configuration.locationType = .outdoor
 
         do {
@@ -27,21 +34,22 @@ final class HealthKitWorkoutService: NSObject {
             session?.delegate = self
             builder?.delegate = self
             builder?.dataSource = HKLiveWorkoutDataSource(
-                healthStore: healthStore, workoutConfiguration: configuration)
+                healthStore: healthStore, workoutConfiguration: configuration
+            )
 
-            session?.startActivity(with: Date())  // Start workout session
+            session?.startActivity(with: Date())
             builder?.beginCollection(withStart: Date()) { success, error in
                 if success {
                     DispatchQueue.main.async {
                         self.isWorkoutActive = true
-                        print("Live workout session started")
+                        self.logger.debug("Live workout session started")
                     }
                 } else if let error = error {
-                    print("Failed to begin workout collection: \(error.localizedDescription)")
+                    self.logger.error("Failed to begin workout collection: \(error.localizedDescription)")
                 }
             }
         } catch {
-            print("Error creating workout session: \(error.localizedDescription)")
+            logger.error("Error creating workout session: \(error.localizedDescription)")
         }
     }
 
@@ -58,26 +66,46 @@ final class HealthKitWorkoutService: NSObject {
                     }
 
                     if let error = error {
-                        print("Failed to finish workout: \(error.localizedDescription)")
+                        self.logger.error("Failed to finish workout: \(error.localizedDescription)")
                     } else {
-                        print("Workout session ended successfully and saved to HealthKit")
+                        self.logger.debug("Workout session ended successfully and saved to HealthKit")
                     }
                 }
             } else if let error = error {
-                print("Failed to end workout collection: \(error.localizedDescription)")
+                self.logger.error("Failed to end workout collection: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    func addWorkoutEventFor(interval: Interval) {
+        let event = HKWorkoutEvent(
+            type: .segment,
+            dateInterval: DateInterval(start: Date.now, duration: interval.duration),
+            metadata: interval.healthKitEventMetadata
+        )
+
+        // Add event to the HealthKit workout builder.
+        builder?.addWorkoutEvents([event]) { success, error in
+            if success {
+                self.logger.debug("Workout event added successfully")
+            } else if let error = error {
+                self.logger.error("Failed to add workout event: \(error.localizedDescription)")
             }
         }
     }
 
     // MARK: Private
 
-    private var healthStore = HKHealthStore()
+    private let healthStore = HKHealthStore()
     private var session: HKWorkoutSession?
     private var builder: HKLiveWorkoutBuilder?
+    private var workoutEvents: [HKWorkoutEvent] = []
 
     private let runningSpeedType = HKObjectType.quantityType(forIdentifier: .runningSpeed)
     private let distanceType = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)
     private let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate)
+
+    private let logger: Logger
 
     // Fetch heart rate samples in real time
     private func handleHeartRateSamples(_ samples: [HKSample]) {
@@ -89,7 +117,7 @@ final class HealthKitWorkoutService: NSObject {
 
             DispatchQueue.main.async {
                 self.heartRate = bpm
-                print("Heart Rate: \(bpm) BPM")
+                self.logger.debug("Heart Rate: \(bpm) BPM")
             }
         }
     }
@@ -98,9 +126,10 @@ final class HealthKitWorkoutService: NSObject {
         guard let distanceType else { return }
 
         builder?.statistics(for: distanceType).map {
-            self.distance = $0.sumQuantity()?.doubleValue(for: HKUnit.meter()) ?? 0.0
+            self.distance = $0.sumQuantity()?.doubleValue(for: HKUnit.mile()) ?? 0.0
         }
     }
+
     private func updatePace() {
         guard let runningSpeedType else { return }
 
@@ -120,7 +149,7 @@ final class HealthKitWorkoutService: NSObject {
 
 extension HealthKitWorkoutService: HKWorkoutSessionDelegate {
     func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {
-        print("Workout session error: \(error.localizedDescription)")
+        logger.error("HealthKitWorkoutService didFailWithError: \(error.localizedDescription)")
     }
 
     func workoutSession(
@@ -129,9 +158,9 @@ extension HealthKitWorkoutService: HKWorkoutSessionDelegate {
     ) {
         switch state {
         case .ended:
-            print("Workout session ended")
+            logger.debug("Workout session ended")
         case .running:
-            print("Workout session running")
+            logger.debug("Workout session running")
         default:
             break
         }
@@ -168,6 +197,6 @@ extension HealthKitWorkoutService: HKLiveWorkoutBuilderDelegate {
     }
 
     func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {
-        print("Workout event collected")
+        logger.debug("Workout event collected")
     }
 }

@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 import Observation
+import WatchKit
 
 @Observable
 final class LiveWorkoutViewModel {
@@ -8,31 +9,56 @@ final class LiveWorkoutViewModel {
     init(dependencyContainer: WatchDependencyContainer, workout: IntervalWorkout) {
         self.healthKitService = dependencyContainer.healthKitService
         self.healthKitWorkoutService = dependencyContainer.healthKitWorkoutService
+        self.audioManager = dependencyContainer.audioManager
         self.workout = workout
 
         timeRemaining = workout.intervals[currentIntervalIndex].duration
     }
 
     var onWorkoutComplete: (() -> Void)?
-    var onPlaySound: (() -> Void)?
 
-    private(set) var currentRound: Int = 1
     private(set) var currentIntervalIndex: Int = 0
     private(set) var timeRemaining: Double = 0
     private(set) var timer: AnyCancellable?
     private(set) var isRunning = false
 
     var heartRate: Int { Int(healthKitWorkoutService.heartRate) }
+    var heartRateString: String { heartRate > 0 ? "\(heartRate) BPM" : "-- BPM"}
+
     var distance: Double { healthKitWorkoutService.distance }
+    var distanceString: String { "\(String(format: "%.2f", distance)) miles"}
+
     var pace: Double { healthKitWorkoutService.pace }
+    var paceString: String { "\(String(format: "%.2f", pace)) min/mile" }
+
+    var currentIntervalDescription: String {
+        switch currentInterval.type {
+        case .warmup, .coolDown:
+            return currentInterval.type.name
+        case .lowIntensity, .highIntensity:
+            return currentInterval.type.name +
+            " Round \(currentIntervalIndex) of " +
+            " of \(totalIntervalRounds)"
+        }
+    }
 
     var intervals: [Interval] { workout.intervals }
     var currentInterval: Interval { workout.intervals[currentIntervalIndex] }
     var timeRemainingString: String { timeString(timeRemaining) }
     var progress: CGFloat { CGFloat(timeRemaining) / CGFloat(currentInterval.duration) }
 
+    // Half of intervals are work-rest pairs.
+    var totalIntervalRounds: Int { intervals.count / 2 }
+
+    func onAppear() {
+        audioManager.prepare()
+        healthKitService.requestAuthorization()
+    }
+
     func startWorkout() {
-        healthKitWorkoutService.startWorkout(workoutType: .highIntensityIntervalTraining)
+        playRepeatedHaptics()
+        audioManager.playBellSound()
+        healthKitWorkoutService.startWorkout()
         startTimer()
         isRunning = true
     }
@@ -43,11 +69,12 @@ final class LiveWorkoutViewModel {
         isRunning = false
     }
 
-    func requestHealthKitPermission() {
-        healthKitService.requestAuthorization()
-    }
-
     // MARK: Private
+
+    private let workout: IntervalWorkout
+    private let healthKitService: HealthKitService
+    private let healthKitWorkoutService: HealthKitWorkoutService
+    private let audioManager: AudioManager
 
     private func startTimer() {
         timer = Timer.publish(every: 0.25, on: .main, in: .common).autoconnect()
@@ -55,8 +82,9 @@ final class LiveWorkoutViewModel {
                 if self.timeRemaining > 0 {
                     self.timeRemaining -= 0.25
                 } else {
-                    self.onPlaySound?()
+                    self.audioManager.playBellSound()
                     self.switchInterval()
+                    self.playRepeatedHaptics()
                 }
             }
     }
@@ -81,7 +109,15 @@ final class LiveWorkoutViewModel {
             : String(format: "0:%02d", remainingSeconds)
     }
 
-    private let workout: IntervalWorkout
-    private let healthKitService: HealthKitService
-    private let healthKitWorkoutService: HealthKitWorkoutService
+    private func playRepeatedHaptics(
+        count: Int = 10,
+        interval: TimeInterval = 0.1
+    ) {
+        for i in 0..<count {
+            DispatchQueue.main.asyncAfter(deadline: .now() + (Double(i) * interval)) {
+                WKInterfaceDevice.current().play(.notification)
+            }
+        }
+    }
+
 }
