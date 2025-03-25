@@ -22,7 +22,7 @@ final class HealthKitWorkoutService: NSObject {
     }
 
     // Start the workout session with live heart rate tracking
-    func startWorkout() {
+    func startWorkout(_ workout: IntervalWorkout) {
         let configuration = HKWorkoutConfiguration()
         configuration.activityType  = .running
         configuration.locationType = .outdoor
@@ -36,6 +36,17 @@ final class HealthKitWorkoutService: NSObject {
             builder?.dataSource = HKLiveWorkoutDataSource(
                 healthStore: healthStore, workoutConfiguration: configuration
             )
+
+            let data = try! JSONEncoder().encode(workout)
+            let metadata: [String: Any] = ["workout_data": data]
+
+            builder?.addMetadata(metadata) { success, error in
+                if success {
+                    self.logger.debug("Interval workout metadata added to healthkit")
+                } else if let error = error {
+                    self.logger.error("Failed to add  Interval Workout metadata: \(error.localizedDescription)")
+                }
+            }
 
             session?.startActivity(with: Date())
             builder?.beginCollection(withStart: Date()) { success, error in

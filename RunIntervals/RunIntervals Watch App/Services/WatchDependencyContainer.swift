@@ -15,9 +15,11 @@ final class DependencyContainer: WatchDependencyContainer {
     init() {}
 
     let audioManager: AudioManager = AudioManager()
-    let healthKitService: HealthKitService = HealthKitService()
+
     let logger: Logger = Logger(subsystem: Bundle.id, category: "Watch")
     let dataService: DataService = CacheableDataService(directoryName: "interval-workouts")
+
+    private(set) lazy var healthKitService: HealthKitService = HealthKitService(logger: logger)
 
     private(set) lazy var watchConnectivityManager: WatchConnectivityManager = {
         WatchConnectivityManager(logger: logger)

@@ -58,7 +58,7 @@ final class LiveWorkoutViewModel {
     func startWorkout() {
         playRepeatedHaptics()
         audioManager.playBellSound()
-        healthKitWorkoutService.startWorkout()
+        healthKitWorkoutService.startWorkout(workout)
         startTimer()
         isRunning = true
     }

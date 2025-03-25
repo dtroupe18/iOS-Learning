@@ -5,6 +5,8 @@ final class WorkoutListViewModel {
 
     init(dependencyContainer: DependencyContainer) {
         self.dependencyContainer = dependencyContainer
+        self.dataService = dependencyContainer.dataService
+        self.healthKitService = dependencyContainer.healthKitService
     }
 
     private(set) var workouts: [IntervalWorkout] = []
@@ -29,8 +31,8 @@ final class WorkoutListViewModel {
     }
 
     private let dependencyContainer: DependencyContainer
-    private var dataService: DataService { dependencyContainer.dataService }
-    private let healthKitService = HealthKitService()
+    private var dataService: DataService
+    private let healthKitService: HealthKitService
 
     private var watchConnectivityManager: AppWatchConnectivityManager {
         dependencyContainer.watchConnectivityManager
