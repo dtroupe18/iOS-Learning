@@ -1,6 +1,7 @@
 import SwiftUI
 import WatchKit
 
+// qwe some kinda wokrout summary to display at the end?
 struct LiveWorkoutView: View {
 
     init(viewModel: LiveWorkoutViewModel) {
@@ -33,7 +34,7 @@ struct LiveWorkoutView: View {
     private func intervalWorkoutView() -> some View {
         VStack(spacing: 4) {
             Text(viewModel.currentIntervalDescription)
-                .font(.system(size: 14, weight: .bold))
+                .font(.system(size: 12, weight: .semibold))
                 .foregroundColor(viewModel.currentInterval.color)
 
             ZStack {

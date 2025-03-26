@@ -64,4 +64,19 @@ struct IntervalWorkout: Cacheable {
     }
 }
 
+extension IntervalWorkout {
+    #if DEBUG
+    static let previewWorkout: IntervalWorkout = {
+        let warmup = Interval(type: .warmup, duration: 5 * 60, id: UUID.newString)
+        let cooldown = Interval(type: .coolDown, duration: 5 * 60, id: UUID.newString)
+        let hiitRounds = generateIntervals(rounds: 20)
+        let intervals = [warmup] + hiitRounds + [cooldown]
 
+        return IntervalWorkout(
+            name: "Sample HIIT Workout",
+            intervals: intervals,
+            id: "sample-workout-id"
+        )
+    }()
+    #endif
+}

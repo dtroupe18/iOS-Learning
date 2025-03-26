@@ -37,8 +37,11 @@ final class HealthKitWorkoutService: NSObject {
                 healthStore: healthStore, workoutConfiguration: configuration
             )
 
-            let data = try! JSONEncoder().encode(workout)
-            let metadata: [String: Any] = ["workout_data": data]
+            let workoutData = try! JSONEncoder().encode(workout)
+            let metadata: [String: Any] = [
+                "source_app": "com.highTree.RunIntervals",
+                "workout_data_string": workoutData.base64EncodedString()
+            ]
 
             builder?.addMetadata(metadata) { success, error in
                 if success {
@@ -64,7 +67,6 @@ final class HealthKitWorkoutService: NSObject {
         }
     }
 
-    // Stop the workout session and save data
     func stopWorkout() {
         guard let builder = builder, let session = session else { return }
 
@@ -146,13 +148,13 @@ final class HealthKitWorkoutService: NSObject {
 
         builder?.statistics(for: runningSpeedType).map {
             let avgSpeed = $0.averageQuantity()
-            let doubleValue = avgSpeed?.doubleValue(
-                for: HKUnit.mile().unitDivided(by: HKUnit.second())
-            )
+            let speed = avgSpeed?.doubleValue(for: HKUnit.mile().unitDivided(by: HKUnit.hour()))
 
-            if let speed = doubleValue {
-                // Convert speed (miles per second) to pace (minutes per mile)
-                self.pace = speed > 0 ? (1.0 / speed) * 60.0 : 0.0
+            if let speed, speed > 0 {
+                // Convert speed (miles per hour) to pace (minutes per mile)
+                self.pace = 60.0 / speed
+            } else {
+                self.pace = 0.0
             }
         }
     }

@@ -4,8 +4,8 @@ import SwiftUI
 struct RunIntervalsApp: App {
     var body: some Scene {
         WindowGroup {
-            WorkoutListView(
-                viewModel: WorkoutListViewModel(dependencyContainer: appDependencyContainer)
+            TabBarView(
+                viewModel: TabBarViewModel(dependencyContainer: appDependencyContainer)
             )
         }
     }

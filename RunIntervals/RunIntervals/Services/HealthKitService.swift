@@ -35,11 +35,10 @@ final class HealthKitService {
             HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
             HKObjectType.quantityType(forIdentifier: .heartRate)!,
             HKObjectType.quantityType(forIdentifier: .runningSpeed)!,
-            HKQuantityType.quantityType(forIdentifier: .vo2Max)!
+            HKQuantityType.quantityType(forIdentifier: .vo2Max)!,
         ]
 
         let writeTypes: Set = [workoutType]
-
 
         healthStore.requestAuthorization(toShare: writeTypes, read: readTypes) { success, error in
             if success {
@@ -56,7 +55,18 @@ final class HealthKitService {
         do {
             let healthKitWorkouts = try await loadHealthKitWorkouts()
             let workoutRecords: [WorkoutRecord] = healthKitWorkouts.map {
-                self.createWorkoutRecord(from: $0)
+                print("#37 metadata \(String(describing: $0.metadata))")
+
+                let events = $0.workoutEvents ?? []
+                for event in events {
+                    print("#37 Event Type: \(event.type.rawValue)")
+                    print("#37 Start: \(event.dateInterval.start), End: \(event.dateInterval.end)")
+                    if let metadata = event.metadata {
+                        print("#37  event Metadata: \(metadata)")
+                    }
+                }
+
+                return self.createWorkoutRecord(from: $0)
             }
 
             self.logger.debug("Successfully fetched \(healthKitWorkouts.count) workouts")
@@ -74,14 +84,17 @@ final class HealthKitService {
 
     #if !os(watchOS)
     private func loadHealthKitWorkouts() async throws -> [HKWorkout] {
-        let workoutType = HKObjectType.workoutType()
-
         // Create a continuation to use async/await
         return try await withCheckedThrowingContinuation { continuation in
+            let workoutType = HKObjectType.workoutType()
+            // Predicate to filter workouts that contain the "source_app" metadata key
+            let predicate = NSPredicate(
+                format: "metadata.source_app == %@", "com.highTree.RunIntervals")
             let sort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
+
             let query = HKSampleQuery(
                 sampleType: workoutType,
-                predicate: nil, // Fetch all workouts or you can modify this for filtering
+                predicate: predicate,
                 limit: HKObjectQueryNoLimit,
                 sortDescriptors: [sort]
             ) { _, samples, error in
@@ -104,25 +117,36 @@ final class HealthKitService {
     }
 
     private func createWorkoutRecord(from healthKitWorkout: HKWorkout) -> WorkoutRecord {
-        if let workoutData = healthKitWorkout.metadata?["workout_data"] as? Data {
-            do {
-                let decodedWorkout = try JSONDecoder().decode(
-                    IntervalWorkout.self,
-                    from: workoutData
-                )
+        if let workoutDataString = healthKitWorkout.metadata?["workout_data_string"] as? String,
+           let workoutData = Data(base64Encoded: workoutDataString) {
 
+            do {
+                let intervalWorkout = try JSONDecoder().decode(IntervalWorkout.self, from: workoutData)
                 return WorkoutRecord(
-                    intervalWorkout: decodedWorkout,
+                    intervalWorkout: intervalWorkout,
                     healthKitWorkout: healthKitWorkout
                 )
-
             } catch {
-                self.logger.error("Failed to decode IntervalWorkout metadata: \(error.localizedDescription)")
+                self.logger.error("Failed to decode IntervalWorkout metadata error: \(error)")
                 return WorkoutRecord(intervalWorkout: nil, healthKitWorkout: healthKitWorkout)
             }
+        } else {
+            self.logger.error("Failed to decode IntervalWorkout metadata")
+            return WorkoutRecord(intervalWorkout: nil, healthKitWorkout: healthKitWorkout)
         }
+    }
 
-        return WorkoutRecord(intervalWorkout: nil, healthKitWorkout: healthKitWorkout)
+    // qwe convert to throws or result.
+    func deleteWorkout(_ workout: HKWorkout) {
+        let healthStore = HKHealthStore()
+
+        healthStore.delete(workout) { success, error in
+            if success {
+                self.logger.debug("Workout deleted successfully")
+            } else if let error = error {
+                self.logger.error("Error deleting workout: \(error.localizedDescription)")
+            }
+        }
     }
     #endif
 }

@@ -76,7 +76,9 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Extensions/Double.swift,
+				Extensions/HKWorkout.swift,
 				Extensions/UUID.swift,
+				Models/HeartRateReading.swift,
 				Models/Interval.swift,
 				Models/IntervalType.swift,
 				Models/IntervalWorkout.swift,

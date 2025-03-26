@@ -21,6 +21,15 @@ struct Interval: Codable, Identifiable {
 
     var healthKitEventMetadata: [String: Any] {
         let data = try! JSONEncoder().encode(self)
-        return ["interval": data]
+        return ["interval_data_string": data.base64EncodedString()]
     }
+}
+
+struct CompletedInterval: Identifiable {
+    let interval: Interval
+    let startDate: Date
+    let endDate: Date
+
+    var id: String { interval.id }
+    var color: Color { interval.color }
 }

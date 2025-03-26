@@ -37,8 +37,7 @@ final class LiveWorkoutViewModel {
             return currentInterval.type.name
         case .lowIntensity, .highIntensity:
             return currentInterval.type.name +
-            " Round \(currentIntervalIndex) of " +
-            " of \(totalIntervalRounds)"
+            " Round \(currentIntervalIndex)/ \(totalIntervalRounds)"
         }
     }
 
@@ -92,7 +91,12 @@ final class LiveWorkoutViewModel {
     private func switchInterval() {
         if currentIntervalIndex < workout.intervals.count - 1 {
             currentIntervalIndex += 1
-            timeRemaining = workout.intervals[currentIntervalIndex].duration
+            timeRemaining = currentInterval.duration
+
+            if currentInterval.type == .highIntensity || currentInterval.type == .lowIntensity {
+                healthKitWorkoutService.addWorkoutEventFor(interval: currentInterval)
+            }
+
         } else {
             stopWorkout()
             onWorkoutComplete?()
