@@ -27,3 +27,13 @@ Explores rotating animations based on Pi. Includes a screensave in SwiftUI
 
 |![](Visuals/PiScreenSaver/PiScreenSaver.gif)|
 |------------------------------------------------|
+
+## Interval Runner (Workout App)
+
+A specialized interval training application for iOS and watchOS, focusing on HIIT sessions and HealthKit integration.
+
+### Key Learnings
+* **HealthKit:** Implementing `HKWorkoutSession` and `HKLiveWorkoutBuilder` to ensure background activity and accurate data collection on watchOS.
+* **Swift Charts:** Creating dynamic, interactive heart rate visualizations to track intensity throughout a workout session.
+* **WatchConnectivity:** Synchronizing custom workout templates between the iPhone and Apple Watch seamlessly.
+* **Haptic Design:** Using `WKHapticType` to provide non-visual cues for interval transitions.
