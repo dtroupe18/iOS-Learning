@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		55948D342F7C413E002EC475 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 55948D332F7C413A002EC475 /* README.md */; };
 		559F7E962D8C8B0E00DDD780 /* RunIntervals Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 559F7E952D8C8B0E00DDD780 /* RunIntervals Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -63,6 +64,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		55948D332F7C413A002EC475 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = README.md; sourceTree = "<group>"; };
 		559F7E6F2D8C8B0B00DDD780 /* RunIntervals.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RunIntervals.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		559F7E7F2D8C8B0E00DDD780 /* RunIntervalsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunIntervalsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		559F7E892D8C8B0E00DDD780 /* RunIntervalsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunIntervalsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -181,6 +183,7 @@
 				559F7E712D8C8B0B00DDD780 /* RunIntervals */,
 				559F7E992D8C8B0E00DDD780 /* RunIntervals Watch App */,
 				559F7E702D8C8B0B00DDD780 /* Products */,
+				55948D332F7C413A002EC475 /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -457,6 +460,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				55948D342F7C413E002EC475 /* README.md in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
